@@ -1,25 +1,19 @@
 import { Link } from '@tanstack/react-router';
 
-export function NotFound({ children }: { children?: React.ReactNode }) {
+import { Button, buttonVariants } from '@/components/ui/button.tsx';
+import { Typography } from '@/components/ui/typography.tsx';
+
+export function NotFound() {
   return (
-    <div className="space-y-2 p-2">
-      <div className="text-gray-600 dark:text-gray-400">
-        {children ?? <p>The page you are looking for does not exist.</p>}
-      </div>
-      <p className="flex flex-wrap items-center gap-2">
-        <button
-          className="rounded bg-emerald-500 px-2 py-1 text-sm font-black uppercase text-white"
-          onClick={() => globalThis.history.back()}
-        >
-          Go back
-        </button>
-        <Link
-          className="rounded bg-cyan-600 px-2 py-1 text-sm font-black uppercase text-white"
-          to="/"
-        >
+    <div className="flex flex-col items-center space-y-4 p-2 text-center">
+      <Typography.H1>404</Typography.H1>
+      <Typography.P>The page you are looking for does not exist.</Typography.P>
+      <div className="flex flex-wrap gap-2">
+        <Button onClick={() => globalThis.history.back()}>Go back</Button>
+        <Link className={buttonVariants({ variant: 'outline' })} to="/">
           Start Over
         </Link>
-      </p>
+      </div>
     </div>
   );
 }

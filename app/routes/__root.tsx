@@ -1,31 +1,36 @@
 import type { QueryClient } from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import {
   createRootRouteWithContext,
-  Link,
+  type ErrorComponentProps,
   Outlet,
   ScrollRestoration,
 } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { Meta, Scripts } from '@tanstack/start';
+import geistMono from 'non.geist/mono?url';
+import geist from 'non.geist?url';
 
-import { DefaultCatchBoundary } from '../components/errors/default-catch-boundary';
-import { NotFound } from '../components/errors/not-found';
-import globalsCss from '../styles/globals.css?url';
+import { DefaultCatchBoundary } from '@/components/errors/default-catch-boundary.tsx';
+import { NotFound } from '@/components/errors/not-found.tsx';
+import { Nav } from '@/components/layout/nav.tsx';
+import { Typography } from '@/components/ui/typography.tsx';
+import { TailwindIndicator } from '@/components/utils/tailwind-indicator.tsx';
+import { TanstackQueryDevtools } from '@/components/utils/tanstack-query-devtools.tsx';
+import { TanstackRouterDevtools } from '@/components/utils/tanstack-router-devtools.tsx';
+import { Providers } from '@/providers';
+import globalsCss from '@/styles/globals.css?url';
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>()({
   component: RootComponent,
-  errorComponent: (props) => {
-    return (
-      <RootDocument>
-        <DefaultCatchBoundary {...props} />
-      </RootDocument>
-    );
-  },
+  errorComponent: ErrorComponent,
   head: () => ({
-    links: [{ href: globalsCss, rel: 'stylesheet' }],
+    links: [
+      { href: globalsCss, rel: 'stylesheet' },
+      { href: geist, rel: 'stylesheet' },
+      { href: geistMono, rel: 'stylesheet' },
+      { href: '/favicon.ico', rel: 'icon' },
+    ],
     meta: [
       {
         charSet: 'utf8',
@@ -35,59 +40,65 @@ export const Route = createRootRouteWithContext<{
         name: 'viewport',
       },
     ],
+    scripts: import.meta.env.PROD
+      ? []
+      : [
+          {
+            children: /* js */ `
+        import RefreshRuntime from "/_build/@react-refresh"
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+      `,
+            type: 'module',
+          },
+        ],
   }),
-  notFoundComponent: () => <NotFound />,
+  notFoundComponent: NotFoundComponent,
+  pendingComponent: PendingComponent,
 });
 
 function RootComponent() {
   return (
     <RootDocument>
+      <Nav />
       <Outlet />
     </RootDocument>
   );
 }
 
+function PendingComponent() {
+  return (
+    <div className="space-y-6 p-6">
+      <Typography.H1>Loading...</Typography.H1>
+    </div>
+  );
+}
+
+function ErrorComponent(props: ErrorComponentProps) {
+  return (
+    <RootDocument>
+      <DefaultCatchBoundary {...props} />
+    </RootDocument>
+  );
+}
+
+function NotFoundComponent() {
+  return <NotFound />;
+}
+
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en">
       <head>
         <Meta />
       </head>
       <body>
-        <div className="flex gap-2 p-2 text-lg">
-          <Link
-            activeOptions={{ exact: true }}
-            activeProps={{
-              className: 'font-bold',
-            }}
-            to="/"
-          >
-            Home
-          </Link>
-          <Link
-            activeOptions={{ exact: true }}
-            activeProps={{
-              className: 'font-bold',
-            }}
-            to="/about"
-          >
-            About
-          </Link>
-          <Link
-            activeProps={{
-              className: 'font-bold',
-            }}
-            // @ts-expect-error - This route does not exist
-            to="/this-route-does-not-exist"
-          >
-            This Route Does Not Exist
-          </Link>
-        </div>
-        <hr />
-        {children}
+        <Providers>{children}</Providers>
+        <TailwindIndicator />
+        <TanstackQueryDevtools />
+        <TanstackRouterDevtools />
         <ScrollRestoration />
-        <TanStackRouterDevtools position="bottom-right" />
-        <ReactQueryDevtools buttonPosition="bottom-left" />
         <Scripts />
       </body>
     </html>
