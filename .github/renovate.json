@@ -5,5 +5,5 @@
   "updateInternalDeps": true,
   "rangeStrategy": "bump",
   "automerge": true,
-  "timezone": "America/Central"
+  "timezone": "America/Chicago"
 }
