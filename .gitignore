@@ -49,6 +49,7 @@ lerna-debug.log*
 *.sln
 *.sw?
 app.config.ts.*timestamp*
+count.txt
 
 # Editor directories and files
 .vscode/*
