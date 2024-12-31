@@ -4,6 +4,7 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/start';
 
 import { Button } from '@/components/ui/button.tsx';
+import { Typography } from '@/components/ui/typography';
 
 const filePath = 'count.txt';
 
@@ -26,7 +27,7 @@ const updateCount = createServerFn({ method: 'POST' })
     await fs.promises.writeFile(filePath, `${count + data}`);
   });
 
-export const Route = createFileRoute('/about')({
+export const Route = createFileRoute('/count')({
   component: Home,
   loader: async () => await getCount(),
 });
@@ -36,15 +37,28 @@ function Home() {
   const state = Route.useLoaderData();
 
   return (
-    <Button
-      type="button"
-      onClick={() => {
-        updateCount({ data: 1 }).then(() => {
-          router.invalidate();
-        });
-      }}
-    >
-      Add 1 to {state}?
-    </Button>
+    <div className="mt-4 flex flex-col justify-center space-y-4 text-center">
+      <Typography.H1>{state}</Typography.H1>
+      <div className="flex justify-center gap-2">
+        <Button
+          onClick={() => {
+            updateCount({ data: -1 }).then(() => {
+              router.invalidate();
+            });
+          }}
+        >
+          -1
+        </Button>
+        <Button
+          onClick={() => {
+            updateCount({ data: 1 }).then(() => {
+              router.invalidate();
+            });
+          }}
+        >
+          +1
+        </Button>
+      </div>
+    </div>
   );
 }

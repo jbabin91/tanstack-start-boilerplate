@@ -21,9 +21,9 @@ export function Nav() {
             activeProps={{
               className: 'font-bold',
             }}
-            to="/about"
+            to="/count"
           >
-            About
+            Count
           </Link>
           <Link
             activeProps={{
