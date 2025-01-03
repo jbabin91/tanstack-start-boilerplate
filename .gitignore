@@ -55,3 +55,6 @@ count.txt
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+
+# docker
+docker/

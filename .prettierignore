@@ -6,3 +6,7 @@ pnpm-lock.yaml
 
 # Tanstack Router
 *.gen.ts
+
+# Drizzle Migrations
+**/migrations/meta/*.json
+*.sql
