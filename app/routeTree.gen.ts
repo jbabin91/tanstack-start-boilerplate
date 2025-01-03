@@ -12,7 +12,9 @@
 
 import { Route as rootRoute } from './routes/__root'
 import { Route as CountImport } from './routes/count'
+import { Route as AppRouteImport } from './routes/_app/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as AppTodosImport } from './routes/_app/todos'
 
 // Create/Update Routes
 
@@ -22,10 +24,21 @@ const CountRoute = CountImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const AppRouteRoute = AppRouteImport.update({
+  id: '/_app',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AppTodosRoute = AppTodosImport.update({
+  id: '/todos',
+  path: '/todos',
+  getParentRoute: () => AppRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -39,6 +52,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_app': {
+      id: '/_app'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRoute
+    }
     '/count': {
       id: '/count'
       path: '/count'
@@ -46,43 +66,70 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CountImport
       parentRoute: typeof rootRoute
     }
+    '/_app/todos': {
+      id: '/_app/todos'
+      path: '/todos'
+      fullPath: '/todos'
+      preLoaderRoute: typeof AppTodosImport
+      parentRoute: typeof AppRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface AppRouteRouteChildren {
+  AppTodosRoute: typeof AppTodosRoute
+}
+
+const AppRouteRouteChildren: AppRouteRouteChildren = {
+  AppTodosRoute: AppTodosRoute,
+}
+
+const AppRouteRouteWithChildren = AppRouteRoute._addFileChildren(
+  AppRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '': typeof AppRouteRouteWithChildren
   '/count': typeof CountRoute
+  '/todos': typeof AppTodosRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '': typeof AppRouteRouteWithChildren
   '/count': typeof CountRoute
+  '/todos': typeof AppTodosRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_app': typeof AppRouteRouteWithChildren
   '/count': typeof CountRoute
+  '/_app/todos': typeof AppTodosRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/count'
+  fullPaths: '/' | '' | '/count' | '/todos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/count'
-  id: '__root__' | '/' | '/count'
+  to: '/' | '' | '/count' | '/todos'
+  id: '__root__' | '/' | '/_app' | '/count' | '/_app/todos'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AppRouteRoute: typeof AppRouteRouteWithChildren
   CountRoute: typeof CountRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AppRouteRoute: AppRouteRouteWithChildren,
   CountRoute: CountRoute,
 }
 
@@ -97,14 +144,25 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/_app",
         "/count"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/_app": {
+      "filePath": "_app/route.tsx",
+      "children": [
+        "/_app/todos"
+      ]
+    },
     "/count": {
       "filePath": "count.tsx"
+    },
+    "/_app/todos": {
+      "filePath": "_app/todos.tsx",
+      "parent": "/_app"
     }
   }
 }

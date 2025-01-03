@@ -38,7 +38,7 @@ function Home() {
 
   return (
     <div className="mt-4 flex flex-col justify-center space-y-4 text-center">
-      <Typography.H1>{state}</Typography.H1>
+      <Typography.H3>Count: {state}</Typography.H3>
       <div className="flex justify-center gap-2">
         <Button
           onClick={() => {

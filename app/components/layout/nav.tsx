@@ -26,6 +26,15 @@ export function Nav() {
             Count
           </Link>
           <Link
+            activeOptions={{ exact: true }}
+            activeProps={{
+              className: 'font-bold',
+            }}
+            to="/todos"
+          >
+            Todos
+          </Link>
+          <Link
             activeProps={{
               className: 'font-bold',
             }}
